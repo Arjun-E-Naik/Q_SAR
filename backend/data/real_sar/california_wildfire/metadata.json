@@ -1,0 +1,30 @@
+{
+  "scenario_id": "california_wildfire",
+  "stac_catalog": "Microsoft Planetary Computer STAC (sentinel-1-rtc)",
+  "sensor": "Sentinel-1 IW GRDH Radiometric Terrain Corrected (C-Band 5.405 GHz, VV + VH)",
+  "polarization_channels": [
+    "VV",
+    "VH"
+  ],
+  "relative_orbit": 137,
+  "crs": "EPSG:4326",
+  "shape": [
+    384,
+    384
+  ],
+  "bbox": [
+    -121.84,
+    39.88,
+    -121.6,
+    40.12
+  ],
+  "pre_date": "2024-07-06",
+  "post_date": "2024-08-23",
+  "pre_item_ids": [
+    "S1A_IW_GRDH_1SDV_20240706T020034_20240706T020059_054634_06A693_rtc"
+  ],
+  "post_item_ids": [
+    "S1A_IW_GRDH_1SDV_20240823T020033_20240823T020058_055334_06BF52_rtc"
+  ],
+  "event_note": "Butte-Tehama Park Fire Canopy Burn Scar (Orbit 137)"
+}

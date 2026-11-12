@@ -1,0 +1,45 @@
+# Q-SAR SENTINEL: MASTER ARCHITECTURAL RULES & INVARIANTS
+
+## 1. Project Context (2026 NASA Space Apps Challenge)
+- **Challenge:** "Dancing with the SARs" (NISAR Multi-Polarization Surface Anomaly & Disaster Routing).
+- **Core Stack:** Next.js 15 (App Router, TypeScript, Tailwind CSS, MapLibre GL), Python 3.11+ FastAPI Backend, PyTorch + PennyLane (`lightning.qubit`), NetworkX (QAOA + OSM road-network routing).
+- **Hardware Constraint:** The user's local machine CANNOT run heavy ML training or raw 5GB GeoTIFF/HDF5 processing. 
+  - NEVER run model training loops inside the local FastAPI startup or API endpoints.
+  - ALWAYS load pre-trained weights (`models/qsar_hybrid_weights.pt`) or fallback to a deterministic fast inference mode using `lightning.qubit` (<150ms latency).
+  - ALWAYS include a synthetic/pre-cropped SAR patch generator (`data/generate_demo_patches.py`) so the app runs 100% offline/locally out-of-the-box without requiring a 10GB NASA Earthdata download first.
+
+## 2. Strict Coding Constraints (DO NOT VIOLATE)
+1. **PennyLane & PyTorch Integration:**
+   - Use `qml.device("lightning.qubit", wires=4)` (fallback to `"default.qubit"` if lightning is unavailable).
+   - Use `@qml.qnode(dev, interface="torch", diff_method="adjoint")` and wrap with `qml.qnn.TorchLayer(qnode, weight_shapes)`.
+   - Keep qubit count strictly between **4 and 6 qubits** (`n_qubits = 4` default) so quantum circuit execution takes <50 milliseconds on any laptop CPU.
+2. **SAR Data Physics:**
+   - Scene patches have shape `(Batch, 2, 64, 64)` per date (`pre_patches`, `post_patches`) representing sensor-native dual-polarization backscatter (`VV`/`VH` for Sentinel-1 RTC or `HH`/`HV` for NISAR L-band, normalized to `[0, 1]`), fused into bi-temporal `(Batch, 4, 64, 64)` `[Post_Co, Post_Cross, Norm(ΔCo), Norm(ΔCross)]` inputs for `HybridQSARNet` and `ClassicalSARNet`.
+   - Keep strict sensor provenance separation: never label Sentinel-1 `VV/VH` observations as NISAR `HH/HV` or synthetic scenes as real satellite data.
+   - Classes: `0: Normal Terrain`, `1: Flood Inundation`, `2: Wildfire Burn Scar`, `3: Crop/Soil Stress` (plus calibrated confidence/entropy abstention flagging for ambiguous regions).
+3. **QAOA Disaster Routing:**
+   - Build hazard-weighted road-network graphs from cached OpenStreetMap roads/bridges (with 6x6 terrain grid fallback) using `networkx`, penalizing Flood, Wildfire, high quantum uncertainty `H_Q`, and closure risks.
+   - Provide fast 4-qubit QAOA corridor selection compared transparently against Classical Direct, Dijkstra, and A* baselines, plus instant GeoJSON route export.
+4. **No Placeholder UI & Outcome-Focused Clarity:**
+   - Every chart, SAR polarization view, Classical vs. Quantum comparison, and map layer must render real mathematical outputs from the FastAPI backend (with instant JSON fallback if the backend port is unreachable). Present Classical, Quantum, and Combined decision outcomes clearly without low-level quantum gate schematic clutter.
+
+## 3. Repository Structure
+```text
+q-sar-sentinel/
+├── Agents.md.txt
+├── colab_training/
+│   └── Train_QSAR_Hybrid_Cloud.ipynb   # Zero-local-compute cloud training notebook
+├── backend/
+│   ├── requirements.txt
+│   ├── main.py                         # FastAPI server with CORS enabled
+│   ├── quantum_model.py                # Bi-temporal SARConvStem + 4-Qubit PennyLane TorchLayer + Classical Head
+│   ├── qaoa_router.py                  # OSM road-network + 6x6 fallback hazard router & QAOA solver
+│   ├── impact_analyzer.py              # Geospatial infrastructure exposure & explainable impact engine
+│   ├── sar_processor.py                # NASA earthaccess fetcher + sensor-aware SAR loader
+│   ├── evaluate_validation.py          # Multi-regime validation (Synthetic, Holdout, Real S1 Reference)
+│   └── models/
+│       └── qsar_hybrid_weights.pt      # Saved weights (auto-generated baseline if missing)
+└── frontend/
+    ├── package.json
+    └── src/app/                        # Next.js Dark-Mode NASA Mission Control UI
+```

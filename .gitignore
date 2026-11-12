@@ -1,0 +1,40 @@
+# Virtual environments
+.venv/
+venv/
+backend/.venv/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+
+# Environment & credentials
+.env
+.env.local
+backend/.env
+_netrc
+.netrc
+
+# Logs & TypeScript build cache
+*.log
+frontend/tsconfig.tsbuildinfo
+
+# Next.js / Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Runtime user-generated custom location & verification state
+backend/data/verification_state.json
+backend/data/custom_scenarios.json
+backend/data/osm_cache/loc_*.json
+backend/data/real_sar/loc_*/
+
+# Large downloaded NASA raw granules (keep small pre-cropped demo & real GeoTIFFs)
+*.h5
+*.tif
+*.tiff
+!backend/data/*.tif
+!backend/data/real_sar/**/*.tif

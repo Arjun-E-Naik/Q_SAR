@@ -1,0 +1,102 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #070b12;
+  color: #e2e8f0;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Precision telemetry scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070b12;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle tactical grid backdrop for offline map tile gaps */
+.sar-grid-backdrop {
+  background-color: #060a11;
+  background-image:
+    linear-gradient(to right, rgba(30, 41, 59, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(30, 41, 59, 0.35) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.maplibregl-ctrl-attrib {
+  background: rgba(7, 11, 18, 0.78) !important;
+  color: #64748b !important;
+  font-size: 10px !important;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: #94a3b8 !important;
+}
+
+.maplibregl-ctrl-group {
+  background: rgba(7, 11, 18, 0.9) !important;
+  border: 1px solid rgba(51, 65, 85, 0.85) !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45) !important;
+}
+
+.maplibregl-ctrl-group button {
+  background-color: transparent !important;
+  border-color: rgba(51, 65, 85, 0.7) !important;
+  width: 26px !important;
+  height: 26px !important;
+}
+
+.maplibregl-ctrl-group button:hover {
+  background-color: rgba(34, 211, 238, 0.16) !important;
+}
+
+.maplibregl-ctrl-group button span {
+  filter: invert(0.88) hue-rotate(180deg);
+}
+
+.maplibregl-ctrl-scale {
+  background: rgba(7, 11, 18, 0.86) !important;
+  border-color: rgba(34, 211, 238, 0.65) !important;
+  color: #cbd5e1 !important;
+  font-family: var(--font-mono), monospace !important;
+  font-size: 10px !important;
+  padding: 1px 6px !important;
+  border-radius: 2px !important;
+}
+
+@media print {
+  @page {
+    size: portrait;
+    margin: 12mm;
+  }
+  html,
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+  }
+}

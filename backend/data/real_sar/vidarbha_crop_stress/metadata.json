@@ -1,0 +1,30 @@
+{
+  "scenario_id": "vidarbha_crop_stress",
+  "stac_catalog": "Microsoft Planetary Computer STAC (sentinel-1-rtc)",
+  "sensor": "Sentinel-1 IW GRDH Radiometric Terrain Corrected (C-Band 5.405 GHz, VV + VH)",
+  "polarization_channels": [
+    "VV",
+    "VH"
+  ],
+  "relative_orbit": 165,
+  "crs": "EPSG:4326",
+  "shape": [
+    384,
+    384
+  ],
+  "bbox": [
+    78.4,
+    20.68,
+    78.64,
+    20.92
+  ],
+  "pre_date": "2026-06-28",
+  "post_date": "2026-10-21",
+  "pre_item_ids": [
+    "S1A_IW_GRDH_1SDV_20260628T003803_20260628T003828_065162_0836D9_rtc"
+  ],
+  "post_item_ids": [
+    "S1D_IW_GRDH_1SDV_20261021T003727_20261021T003752_005106_009AB6_rtc"
+  ],
+  "event_note": "Wardha-Yavatmal 2026 Kharif Agrarian Cycle (Orbit 165)"
+}
