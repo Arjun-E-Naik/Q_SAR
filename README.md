@@ -1,6 +1,6 @@
 # Q-SAR Sentinel 2.0
 
-Bi-Temporal SAR Disaster Assessment and Emergency Corridor Routing Platform built for the 2026 NASA International Space Apps Challenge ("Dancing with the SARs").
+Bi-Temporal SAR Disaster Assessment and Emergency Corridor Routing Platform built for the NASA International Space Apps Challenge ("Dancing with the SARs").
 
 ## Project Overview
 
@@ -10,15 +10,15 @@ Optical Earth-observation imagery is frequently obstructed by dense cloud cover 
 2. Linking hazard detections to local roads, bridges, hospitals, shelters, and populated settlements.
 3. Selecting evacuation or relief corridors that balance travel distance against hazard exposure and model uncertainty without relying on blind shortest-path routing.
 
-Q-SAR Sentinel 2.0 addresses these gaps in a unified decision-support workflow combining bi-temporal SAR physics, a compact hybrid quantum-classical neural classifier, OpenStreetMap infrastructure analysis, human-in-the-loop verification, and constraint-preserving XY-QAOA route selection.
+Q-SAR Sentinel 2.0 addresses these gaps in a unified decision-support workflow combining bi-temporal SAR physics, a compact hybrid quantum-classical neural classifier, OpenStreetMap infrastructure analysis, human-in-the-loop verification, and constraint-preserving XY-QAOA route selection. For complete system internals, formulas, and module architecture, see [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md).
 
 ## What the Application Provides
 
-- **Dual-Sensor Bi-Temporal SAR Analysis:** Strictly separates real Radiometric Terrain Corrected Sentinel-1 C-band (`VV`, `VH`) imagery from NISAR L-band (`HH`, `HV`) physics simulations (`nisar_sim`), with live NASA Earthdata CMR metadata lookup (`OPERA_L2_RTC-S1_V1`, `NISAR_L2_GCOV_PROVISIONAL_V1`, `NISAR_UR_L2`).
-- **Any-Location Global AOI Search (`GET /api/geocode`, `POST /api/locations/prepare`):** Search any city, river basin, or `lat, lon` coordinate pair directly from the dashboard. The backend geocodes the area, extracts cropped COG overview windows (`<= 512x512`) for matching pre/post Sentinel-1 passes from Planetary Computer STAC, fetches local OpenStreetMap roads, bridges, settlements, and critical facilities from Overpass (with terrain fallback), and runs the full analysis pipeline.
-- **Hybrid Quantum-Classical Classifier (`HybridQSARNet`):** A 9,732-parameter model (45.0 KB checkpoint) combining a dual-stream `SARConvStem` (spatial `3x3` filters + `AvgPool2d(4)` radiometric branch) with a 4-qubit PennyLane variational layer (`AngleEmbedding` + 2 `StronglyEntanglingLayers`, 8 observables). Low-confidence or high-entropy regions are flagged as `Unknown / Requires Human Verification` via `abstention_flag` instead of forcing uncertain predictions.
-- **Geospatial Exposure & Verification Workflow:** Computes cosine-latitude geodesic hazard areas (km2 and hectares), evaluates radiometric alignment/data quality gates (`data_quality`), tracks exposed OSM settlements, critical facilities (hospitals, clinics, fire stations, shelters, schools), and bridge crossings, generates a weighted verification priority queue, persists operator tile triage and route approvals (`/api/verifications`), and exports enriched `.geojson` or printable Situation Reports (SITREP).
-- **Constraint-Preserving XY-QAOA Route Selection:** Generates four diverse candidate corridors across contracted OSM road networks (or a `6x6` tactical grid fallback when OSM connectivity is unavailable), constructs a 4-qubit Ising Hamiltonian controlled by Risk Aversion (`alpha` in `[0.2, 2.0]`), initializes an exact Hamming-weight-1 `|W_4>` state, and evolves a constraint-preserving XY ring mixer (`valid_onehot_prob_mass >= 0.99`) benchmarked against Classical Direct, Dijkstra, and A*.
+- **Dual-Sensor Bi-Temporal SAR Analysis:** Strictly separates real Radiometric Terrain Corrected Sentinel-1 C-band (`VV`, `VH`) imagery from NISAR L-band (`HH`, `HV`) physics simulations (`nisar_sim`), with live NASA Earthdata CMR metadata lookup (`OPERA_L2_RTC-S1_V1`, `NISAR_L2_GCOV_PROVISIONAL_V1`, `NISAR_UR_L2`) and raster alignment/radiometric quality checks (`data_quality`: `PASS` / `WARN` / `UNSUITABLE`).
+- **Any-Location Global AOI Search (`GET /api/geocode`, `POST /api/locations/prepare`):** Search any city, river basin, or `lat, lon` coordinate pair directly from the dashboard. The backend geocodes the area (Nominatim or direct coordinate parsing), extracts cropped COG overview windows (`<= 512x512`) for matching pre/post Sentinel-1 passes from Planetary Computer STAC with bounded HTTP timeouts (`15s`), fetches local OpenStreetMap roads, bridges, settlements, and critical facilities from Overpass (with lightweight arterial retry and terrain fallback), persists dynamic locations to `custom_scenarios.json`, and runs the full analysis pipeline.
+- **Hybrid Quantum-Classical Classifier (`HybridQSARNet`):** A 9,732-parameter model (45.0 KB checkpoint) combining a dual-stream `SARConvStem` (spatial `3x3` filters + pre-activation `AvgPool2d(4)` radiometric branch) with a 4-qubit PennyLane variational layer (`AngleEmbedding` + 2 `StronglyEntanglingLayers`, 8 observables). Low-confidence or high-entropy regions are flagged as `Unknown / Requires Human Verification` via `abstention_flag` instead of forcing uncertain predictions.
+- **Geospatial Exposure & Verification Workflow:** Computes cosine-latitude geodesic hazard areas (km2 and hectares), tracks exposed OSM settlements, critical facilities (hospitals, clinics, fire stations, police, shelters, schools), and bridge crossings, ranks tiles via a weighted verification priority queue, separates automated `radiometric_reference_label` from `verified_ground_truth_label`, persists operator tile triage and route approvals (`/api/verifications`), and exports enriched `.geojson` or printable Situation Reports (SITREP).
+- **Constraint-Preserving XY-QAOA Route Selection:** Generates four diverse candidate corridors across contracted OSM road networks (or a `6x6` tactical grid fallback when OSM connectivity is unavailable), constructs a 4-qubit Ising Hamiltonian controlled by Risk Aversion (`alpha` in `[0.2, 2.0]`), prepares an exact Hamming-weight-1 `|W_4>` state, and evolves a constraint-preserving XY ring mixer (`valid_onehot_prob_mass >= 0.99` vs. unconstrained X-mixer leakage diagnostic) benchmarked against Classical Direct, Dijkstra, and A*.
 
 ## Tools and Technology Stack
 
@@ -35,39 +35,38 @@ Q-SAR Sentinel 2.0 addresses these gaps in a unified decision-support workflow c
 ```text
 .
 ├── .gitignore
-├── AUDIT_REPORT.md                       # Pre-build architecture and environment audit
 ├── Agents.md.txt                         # Architectural constraints and specifications
-├── NASA_SUBMISSION_GUIDE.md              # Space Apps submission copy and demo outline
+├── TECHNICAL_ARCHITECTURE.md             # Detailed technical implementation, algorithms, API & field guide
 ├── README.md
-├── start_local.ps1                       # Windows PowerShell launcher for backend + frontend
+├── start_local.ps1                       # Cross-environment Windows PowerShell launcher for backend + frontend
 ├── colab_training/
 │   └── Train_QSAR_Hybrid_Cloud.ipynb     # Cloud training notebook exporting weights & benchmarks
 ├── backend/
 │   ├── .env.example                      # Optional NASA Earthdata credentials template
-│   ├── requirements.txt                  # Python dependencies
+│   ├── requirements.txt                  # Python dependencies (including requests)
 │   ├── main.py                           # FastAPI endpoints (/api/health, /scenarios, /analyze, /geocode, /locations/prepare, /verifications, /geojson)
-│   ├── sar_processor.py                  # Sensor provenance, GeoTIFF reprojection, multi-look reference, NASA CMR queries
+│   ├── sar_processor.py                  # Sensor provenance, GeoTIFF reprojection, multi-look reference, data_quality gate & CMR queries
 │   ├── quantum_model.py                  # HybridQSARNet, ClassicalSARNet, telemetry, calibration & abstention logic
-│   ├── impact_analyzer.py                # Geodesic exposure, OSM intersections, priority queue, operational briefs
+│   ├── impact_analyzer.py                # Geodesic exposure, OSM intersections, facilities, priority queue & briefs
 │   ├── qaoa_router.py                    # Contracted OSM / grid corridor generation + 4-qubit XY-QAOA solver
 │   ├── evaluate_validation.py            # 3-track validation & calibration evaluator
 │   ├── data/
 │   │   ├── generate_demo_patches.py      # Pre/post L-band simulator and dynamic scenario registry
 │   │   ├── fetch_real_sar_geotiffs.py    # Planetary Computer STAC Sentinel-1 RTC COG window fetcher
-│   │   ├── fetch_osm_infrastructure.py   # Overpass OSM road, bridge, facility & settlement fetcher
+│   │   ├── fetch_osm_infrastructure.py   # Overpass OSM road, bridge, facility & settlement fetcher with fallback
 │   │   ├── osm_cache/                    # Pre-cached OSM JSONs for preset scenarios
 │   │   └── real_sar/                     # Pre-cached EPSG:4326 Sentinel-1 RTC GeoTIFFs for preset scenarios
 │   ├── models/
 │   │   ├── qsar_hybrid_weights.pt        # Pre-trained bi-temporal model checkpoint (45.0 KB)
 │   │   └── benchmark_metrics.json        # Evaluated 3-track metrics and confusion matrices
 │   └── tests/
-│       └── test_phase1.py                # Automated backend, XY-QAOA, and location tests
+│       └── test_phase1.py                # Automated backend, XY-QAOA, location prep & verification tests
 └── frontend/
     ├── package.json
     ├── next.config.ts
     ├── tsconfig.json
     └── src/
-        ├── app/                          # Next.js App Router pages and global styles
+        ├── app/                          # Next.js App Router pages, print SITREP styling & layout
         ├── components/
         │   ├── MissionControlDashboard.tsx
         │   ├── QuantumTelemetryPanel.tsx
@@ -154,4 +153,4 @@ npm run build
 
 - **Satellite Imagery:** Pre-cached and on-demand Sentinel-1 C-band IW GRDH (`VV`, `VH`) RTC crops via Microsoft Planetary Computer STAC (`sentinel-1-rtc`), paired with NASA Earthdata CMR granule discovery (`earthaccess`) and an internal L-band `nisar_sim` ablation simulator.
 - **Infrastructure & Basemaps:** OpenStreetMap roads, bridges, facilities, and settlements via Overpass API; Nominatim geocoding; Esri World Dark Gray Base and Esri World Imagery rendered through MapLibre GL.
-- **License:** Open-source MIT License for NASA International Space Apps Challenge evaluation.
+- **License:** Open-source MIT License.
