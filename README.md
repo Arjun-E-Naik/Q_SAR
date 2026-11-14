@@ -12,6 +12,7 @@
 
 * **Live Web Application (Vercel):** [https://q-sar.vercel.app](https://q-sar.vercel.app)
 * **GitHub Source Code:** [https://github.com/Arjun-E-Naik/Q_SAR.git](https://github.com/Arjun-E-Naik/Q_SAR.git)
+* **Field Operator Manual & User Guide:** [USER_MANUAL.md](USER_MANUAL.md)
 * **Technical Architecture Deep Dive:** [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)
 * **Complete Scientific & Technical Audit:** [QSAR_COMPLETE_TECHNICAL_AUDIT.md](QSAR_COMPLETE_TECHNICAL_AUDIT.md)
 * **Release Changelog:** [CHANGELOG_QSAR.md](CHANGELOG_QSAR.md)
@@ -107,6 +108,7 @@ flowchart TD
 .
 ├── .gitignore
 ├── Agents.md.txt                         # Architectural constraints and specifications
+├── USER_MANUAL.md                        # Field operator manual, real-world case study, and button reference
 ├── TECHNICAL_ARCHITECTURE.md             # Detailed technical implementation, algorithms, API & field guide
 ├── README.md
 ├── start_local.ps1                       # Cross-environment Windows PowerShell launcher for backend + frontend
