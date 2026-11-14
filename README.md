@@ -1,6 +1,22 @@
 # Q-SAR Sentinel 2.0
+**Bi-Temporal SAR Disaster Assessment and Emergency Corridor Routing Platform**  
+*Built for the NASA International Space Apps Challenge 2026: "Dancing with the SARs"*
 
-Bi-Temporal SAR Disaster Assessment and Emergency Corridor Routing Platform built for the NASA International Space Apps Challenge ("Dancing with the SARs").
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-q--sar.vercel.app-0ea5e9?style=for-the-badge&logo=vercel)](https://q-sar.vercel.app)
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-1e293b?style=for-the-badge&logo=github)](https://github.com/Arjun-E-Naik/Q_SAR.git)
+[![NASA Space Apps](https://img.shields.io/badge/NASA-Space%20Apps%202026-1d4ed8?style=for-the-badge)](https://www.spaceappschallenge.org/)
+
+---
+
+### Quick Links
+
+* **Live Web Application (Vercel):** [https://q-sar.vercel.app](https://q-sar.vercel.app)
+* **GitHub Source Code:** [https://github.com/Arjun-E-Naik/Q_SAR.git](https://github.com/Arjun-E-Naik/Q_SAR.git)
+* **Technical Architecture Deep Dive:** [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)
+* **Complete Scientific & Technical Audit:** [QSAR_COMPLETE_TECHNICAL_AUDIT.md](QSAR_COMPLETE_TECHNICAL_AUDIT.md)
+* **Release Changelog:** [CHANGELOG_QSAR.md](CHANGELOG_QSAR.md)
+
+---
 
 ## Project Overview
 
