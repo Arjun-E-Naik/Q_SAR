@@ -279,6 +279,7 @@ def run_validation_suite(output_path: Path = DEFAULT_BENCHMARK_PATH) -> Dict[str
             "heuristic baseline, not manually digitized ground truth."
         ),
         "is_verified_manual_ground_truth": False,
+        "ground_truth_category": "multi_track_physics_and_radiometric_heuristic",
         "quantum_accuracy": t_l4["hybrid_quantum"]["accuracy"],
         "classical_accuracy": t_l4["matched_classical_head"]["accuracy"],
         "standalone_classical_accuracy": t_l4["standalone_classical_cnn"]["accuracy"],
@@ -287,6 +288,11 @@ def run_validation_suite(output_path: Path = DEFAULT_BENCHMARK_PATH) -> Dict[str
         "quantum_1look_accuracy": t_l1["hybrid_quantum"]["accuracy"],
         "classical_1look_accuracy": t_l1["matched_classical_head"]["accuracy"],
         "standalone_classical_1look_accuracy": t_l1["standalone_classical_cnn"]["accuracy"],
+        "real_s1_quantum_heuristic_agreement": track_c_all["hybrid_quantum"]["accuracy"],
+        "real_s1_classical_heuristic_agreement": track_c_all["standalone_classical_cnn"]["accuracy"],
+        "real_s1_quantum_heuristic_macro_f1": track_c_all["hybrid_quantum"]["macro_f1"],
+        "real_s1_classical_heuristic_macro_f1": track_c_all["standalone_classical_cnn"]["macro_f1"],
+        # Backward-compatible aliases
         "real_s1_quantum_accuracy": track_c_all["hybrid_quantum"]["accuracy"],
         "real_s1_classical_accuracy": track_c_all["standalone_classical_cnn"]["accuracy"],
         "real_s1_quantum_macro_f1": track_c_all["hybrid_quantum"]["macro_f1"],
@@ -319,6 +325,6 @@ if __name__ == "__main__":
     print(f"Track A (NISAR Sim L=4): Q={res['quantum_accuracy']:.4f} | HeadC={res['classical_accuracy']:.4f} | StandaloneC={res['standalone_classical_accuracy']:.4f}")
     print(f"Track A (NISAR Sim L=1): Q={res['quantum_1look_accuracy']:.4f} | HeadC={res['classical_1look_accuracy']:.4f} | StandaloneC={res['standalone_classical_1look_accuracy']:.4f}")
     print(f"Track B (Domain Shift L=4): Q={res['tracks']['domain_shift_holdout']['l4_domain_shift']['hybrid_quantum']['accuracy']:.4f} | StandaloneC={res['tracks']['domain_shift_holdout']['l4_domain_shift']['standalone_classical_cnn']['accuracy']:.4f}")
-    print(f"Track C (Real S1 Zero-Shot): Q={res['real_s1_quantum_accuracy']:.4f} (F1={res['real_s1_quantum_macro_f1']:.4f}) | StandaloneC={res['real_s1_classical_accuracy']:.4f} (F1={res['real_s1_classical_macro_f1']:.4f})")
+    print(f"Track C (Real S1 Zero-Shot vs OPERA Heuristic Ref): Q Agreement={res['real_s1_quantum_heuristic_agreement']:.4f} (F1={res['real_s1_quantum_heuristic_macro_f1']:.4f}) | StandaloneC Agreement={res['real_s1_classical_heuristic_agreement']:.4f} (F1={res['real_s1_classical_heuristic_macro_f1']:.4f})")
     for sc, sr in res["tracks"]["real_s1_rtc_zeroshot"]["per_scenario"].items():
-        print(f"  Real S1 [{sc:20s}]: Q={sr['hybrid_quantum']['accuracy']:.4f} | HeadC={sr['matched_classical_head']['accuracy']:.4f} | StandaloneC={sr['standalone_classical_cnn']['accuracy']:.4f}")
+        print(f"  Real S1 [{sc:20s}]: Q Agreement={sr['hybrid_quantum']['accuracy']:.4f} | HeadC={sr['matched_classical_head']['accuracy']:.4f} | StandaloneC={sr['standalone_classical_cnn']['accuracy']:.4f}")

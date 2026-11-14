@@ -391,8 +391,17 @@ def _run_full_analysis(req: AnalyzeRequest) -> Dict[str, Any]:
             "quantum_device": QDEV_NAME,
             "weight_source": model.weight_source,
             "ground_truth_available": gt_available,
+            "ground_truth_category": provenance.get("ground_truth_category", "radiometric_heuristic_reference"),
             "ground_truth_type": provenance.get("ground_truth_type", "Reference"),
             "is_verified_manual_ground_truth": bool(provenance.get("is_verified_manual_ground_truth", False)),
+            "metric_label": (
+                "Accuracy (Synthetic GT)"
+                if provenance.get("is_verified_manual_ground_truth", False)
+                else "Agreement with Heuristic Reference"
+            ),
+            "is_heuristic_agreement": not bool(provenance.get("is_verified_manual_ground_truth", False)),
+            "scene_quantum_heuristic_agreement": round(q_correct / 36.0, 4) if gt_available else None,
+            "scene_classical_heuristic_agreement": round(c_correct / 36.0, 4) if gt_available else None,
             "scene_quantum_accuracy": round(q_correct / 36.0, 4) if gt_available else None,
             "scene_classical_accuracy": round(c_correct / 36.0, 4) if gt_available else None,
             "scene_quantum_macro_f1": _scene_macro_f1(ref_list, q_preds_list) if gt_available else None,

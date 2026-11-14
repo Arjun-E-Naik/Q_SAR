@@ -287,6 +287,49 @@ def load_opera_geotiff_patches(
     return patches
 
 
+class NISARGCOVAdapter:
+    """Sensor adapter for NASA-ISRO NISAR L2 GCOV (L-Band HH/HV) HDF5 products."""
+    sensor_name: str = "NASA-ISRO SAR (NISAR)"
+    sensor_band: str = "L-Band (1.257 GHz)"
+    polarizations: Tuple[str, ...] = ("HH", "HV")
+    co_pol: str = "HH"
+    cross_pol: str = "HV"
+
+    @staticmethod
+    def inspect_and_load(
+        h5_path: str | Path, target_bbox: Optional[Tuple[float, float, float, float]] = None
+    ) -> Dict[str, Any]:
+        return load_nisar_h5_patches(h5_path, target_bbox)
+
+
+class Sentinel1RTCAdapter:
+    """Sensor adapter for Copernicus Sentinel-1 C-Band RTC (VV/VH) products."""
+    sensor_name: str = "Copernicus Sentinel-1 RTC"
+    sensor_band: str = "C-Band (5.405 GHz)"
+    polarizations: Tuple[str, ...] = ("VV", "VH")
+    co_pol: str = "VV"
+    cross_pol: str = "VH"
+
+    @staticmethod
+    def load_scene(
+        scenario_id: str,
+    ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, Dict[str, Any], Dict[str, Any]]:
+        return _load_cached_real_geotiff_scene(scenario_id)
+
+
+class SyntheticSARAdapter:
+    """Sensor adapter for controlled physics-based dual-polarization SAR simulation."""
+    sensor_name: str = "Simulated NISAR L-Band Physics Benchmark"
+    sensor_band: str = "L-Band (1.257 GHz · Simulated)"
+    polarizations: Tuple[str, ...] = ("HH", "HV")
+    co_pol: str = "HH"
+    cross_pol: str = "HV"
+
+    @staticmethod
+    def generate(scenario_id: str, look_count: int = 4, seed: int = 42) -> Dict[str, Any]:
+        return generate_realistic_sar_scene(scenario_id=scenario_id, look_count=look_count, seed=seed)
+
+
 def clear_sar_scene_cache() -> None:
     """Clear LRU-cached GeoTIFF scenes when new custom user locations are added."""
     _load_cached_real_geotiff_scene.cache_clear()
@@ -417,11 +460,14 @@ def load_sar_scene(
         scene["data_quality"] = data_quality
         scene["data_provenance"] = {
             "data_source": "real_s1_rtc",
+            "data_source_mode": "live_sentinel1",
             "data_source_tier": "real_satellite",
             "is_real_satellite_data": True,
             "ground_truth_available": True,
+            "ground_truth_category": "radiometric_heuristic_reference",
             "ground_truth_type": "OPERA Radiometric Change Reference (Heuristic — Not Manual Ground Truth)",
             "is_verified_manual_ground_truth": False,
+            "metric_display_mode": "heuristic_agreement",
             "sensor_label": "Real Sentinel-1 C-Band RTC (VV + VH · Planetary Computer STAC)",
             "sensor_band": "C-Band (5.405 GHz)",
             "polarization_channels": ["VV", "VH"],
@@ -454,11 +500,14 @@ def load_sar_scene(
         }
         scene["data_provenance"] = {
             "data_source": "nisar_sim",
+            "data_source_mode": "simulation",
             "data_source_tier": "synthetic_physics",
             "is_real_satellite_data": False,
             "ground_truth_available": True,
+            "ground_truth_category": "synthetic_physics_ground_truth",
             "ground_truth_type": "Synthetic L-Band Physics Ground Truth (Simulated Reference)",
-            "is_verified_manual_ground_truth": False,
+            "is_verified_manual_ground_truth": True,
+            "metric_display_mode": "accuracy",
             "sensor_label": "Simulated NISAR L-Band Physics Benchmark (HH + HV · Synthetic)",
             "sensor_band": "L-Band (1.257 GHz · Simulated)",
             "polarization_channels": ["HH", "HV"],

@@ -5,6 +5,7 @@
   "weight_source": "bitemporal_hybrid_trained",
   "note": "Honest 3-track evaluation (synthetic L=4/L=1, domain-shift holdout, and zero-shot real Sentinel-1 C-band RTC vs. OPERA radiometric reference). Real S1 reference is a heuristic baseline, not manually digitized ground truth.",
   "is_verified_manual_ground_truth": false,
+  "ground_truth_category": "multi_track_physics_and_radiometric_heuristic",
   "quantum_accuracy": 0.8611,
   "classical_accuracy": 0.9444,
   "standalone_classical_accuracy": 0.9259,
@@ -13,6 +14,10 @@
   "quantum_1look_accuracy": 0.8056,
   "classical_1look_accuracy": 0.7778,
   "standalone_classical_1look_accuracy": 0.8796,
+  "real_s1_quantum_heuristic_agreement": 0.6852,
+  "real_s1_classical_heuristic_agreement": 0.6204,
+  "real_s1_quantum_heuristic_macro_f1": 0.6645,
+  "real_s1_classical_heuristic_macro_f1": 0.6378,
   "real_s1_quantum_accuracy": 0.6852,
   "real_s1_classical_accuracy": 0.6204,
   "real_s1_quantum_macro_f1": 0.6645,
@@ -95,7 +100,7 @@
               "iou": 0.6333
             }
           ],
-          "latency_ms": 134.72
+          "latency_ms": 102.6
         },
         "matched_classical_head": {
           "samples": 108,
@@ -244,7 +249,7 @@
               "iou": 0.7407
             }
           ],
-          "latency_ms": 27.14
+          "latency_ms": 17.53
         }
       },
       "l1_speckle_stress": {
@@ -321,7 +326,7 @@
               "iou": 0.6667
             }
           ],
-          "latency_ms": 120.6
+          "latency_ms": 75.58
         },
         "matched_classical_head": {
           "samples": 108,
@@ -470,7 +475,7 @@
               "iou": 0.6562
             }
           ],
-          "latency_ms": 27.39
+          "latency_ms": 17.98
         }
       }
     },
@@ -549,7 +554,7 @@
               "iou": 0.6981
             }
           ],
-          "latency_ms": 436.38
+          "latency_ms": 459.76
         },
         "matched_classical_head": {
           "samples": 360,
@@ -698,7 +703,7 @@
               "iou": 0.7396
             }
           ],
-          "latency_ms": 79.59
+          "latency_ms": 74.27
         }
       },
       "l1_domain_shift": {
@@ -775,7 +780,7 @@
               "iou": 0.697
             }
           ],
-          "latency_ms": 309.67
+          "latency_ms": 312.75
         },
         "matched_classical_head": {
           "samples": 360,
@@ -924,7 +929,7 @@
               "iou": 0.6518
             }
           ],
-          "latency_ms": 96.54
+          "latency_ms": 72.69
         }
       }
     },
@@ -1003,7 +1008,7 @@
               "iou": 0.587
             }
           ],
-          "latency_ms": 124.23
+          "latency_ms": 96.55
         },
         "matched_classical_head": {
           "samples": 108,
@@ -1152,7 +1157,7 @@
               "iou": 0.3673
             }
           ],
-          "latency_ms": 23.63
+          "latency_ms": 18.33
         }
       },
       "per_scenario": {
@@ -1230,7 +1235,7 @@
                 "iou": 0.7826
               }
             ],
-            "latency_ms": 52.73
+            "latency_ms": 47.32
           },
           "matched_classical_head": {
             "samples": 36,
@@ -1379,7 +1384,7 @@
                 "iou": 0.7619
               }
             ],
-            "latency_ms": 7.79
+            "latency_ms": 7.18
           }
         },
         "california_wildfire": {
@@ -1456,7 +1461,7 @@
                 "iou": 0.0
               }
             ],
-            "latency_ms": 36.33
+            "latency_ms": 27.15
           },
           "matched_classical_head": {
             "samples": 36,
@@ -1605,7 +1610,7 @@
                 "iou": 0.0
               }
             ],
-            "latency_ms": 8.18
+            "latency_ms": 6.34
           }
         },
         "vidarbha_crop_stress": {
@@ -1682,7 +1687,7 @@
                 "iou": 0.5
               }
             ],
-            "latency_ms": 36.64
+            "latency_ms": 26.17
           },
           "matched_classical_head": {
             "samples": 36,
@@ -1831,7 +1836,7 @@
                 "iou": 0.1
               }
             ],
-            "latency_ms": 7.66
+            "latency_ms": 6.29
           }
         }
       }

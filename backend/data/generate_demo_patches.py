@@ -557,7 +557,7 @@ def assemble_sar_scene_from_db(
                     "crop_change_pct": round(crop_change_pct, 1),
                     "reference_class": int(tile_labels[idx]),
                     "radiometric_reference_label": int(tile_labels[idx]),
-                    "verified_ground_truth_label": None,
+                    "verified_ground_truth_label": int(tile_labels[idx]) if pixel_labels is not None else None,
                     "reference_type": reference_type,
                 }
             )

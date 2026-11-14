@@ -133,6 +133,7 @@ export interface QaoaRoutingResult {
     classical_direct: RouteAlgorithmBenchmark;
     classical_dijkstra: RouteAlgorithmBenchmark;
     classical_astar: RouteAlgorithmBenchmark;
+    classical_enumeration?: RouteAlgorithmBenchmark;
     qaoa_selected: RouteAlgorithmBenchmark;
   };
   operational_caution?: string;
@@ -142,11 +143,14 @@ export interface QaoaRoutingResult {
 
 export interface DataProvenance {
   data_source: "real_s1_rtc" | "nisar_sim";
+  data_source_mode?: "live_nisar" | "live_sentinel1" | "simulation" | "cached_demo";
   data_source_tier?: string;
   is_real_satellite_data: boolean;
   ground_truth_available?: boolean;
+  ground_truth_category?: string;
   ground_truth_type?: string;
   is_verified_manual_ground_truth?: boolean;
+  metric_display_mode?: "accuracy" | "heuristic_agreement";
   sensor_label: string;
   sensor_band?: string;
   polarization_channels?: string[];
@@ -206,6 +210,10 @@ export interface BenchmarkMetrics {
   quantum_1look_accuracy?: number;
   classical_1look_accuracy?: number;
   standalone_classical_1look_accuracy?: number;
+  real_s1_quantum_heuristic_agreement?: number;
+  real_s1_classical_heuristic_agreement?: number;
+  real_s1_quantum_heuristic_macro_f1?: number;
+  real_s1_classical_heuristic_macro_f1?: number;
   real_s1_quantum_accuracy?: number;
   real_s1_classical_accuracy?: number;
   real_s1_quantum_macro_f1?: number;
@@ -434,8 +442,13 @@ export interface AnalysisResponse {
     quantum_device: string;
     weight_source: string;
     ground_truth_available?: boolean;
+    ground_truth_category?: string;
     ground_truth_type?: string;
     is_verified_manual_ground_truth?: boolean;
+    metric_label?: string;
+    is_heuristic_agreement?: boolean;
+    scene_quantum_heuristic_agreement?: number | null;
+    scene_classical_heuristic_agreement?: number | null;
     scene_quantum_accuracy: number | null;
     scene_classical_accuracy: number | null;
     scene_quantum_macro_f1?: number | null;

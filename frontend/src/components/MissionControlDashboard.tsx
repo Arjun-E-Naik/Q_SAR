@@ -72,8 +72,7 @@ function getCachedFallback(
   const keyed = `${scenarioId}__${dataSource}`;
   if (DEMO_CACHE[keyed]) return DEMO_CACHE[keyed];
   if (DEMO_CACHE[scenarioId]) return DEMO_CACHE[scenarioId];
-  const firstKey = Object.keys(DEMO_CACHE)[0];
-  return firstKey ? DEMO_CACHE[firstKey] : null;
+  return null;
 }
 
 export default function MissionControlDashboard() {
@@ -327,7 +326,22 @@ export default function MissionControlDashboard() {
             // ignore JSON parse errors
           }
           setBackendStatus("online");
-          setStatusNotice(`Scan failed: ${detail}`);
+          const fallback = getCachedFallback(sc, ds);
+          if (fallback && SCENARIO_OPTIONS.some((preset) => preset.id === sc)) {
+            setAnalysis(fallback);
+            setSelectedCorridorIdx(fallback.qaoa_routing.selected_corridor_index);
+            setSelectedTile(
+              fallback.tiles.find(
+                (t) => t.quantum_class === 1 || t.quantum_class === 2
+              ) ??
+                fallback.tiles[14] ??
+                null
+            );
+            setStatusNotice(`Live scan failed (${detail}); loaded verified cached snapshot for ${sc}.`);
+          } else {
+            setAnalysis(null);
+            setStatusNotice(`Scan failed for ${sc}: ${detail}`);
+          }
           return false;
         }
 
@@ -362,10 +376,11 @@ export default function MissionControlDashboard() {
               null
           );
           setStatusNotice(
-            "Backend offline — showing verified cached mission snapshot."
+            `Backend offline — showing verified cached mission snapshot for ${sc}.`
           );
         } else {
-          setStatusNotice("Failed to reach Q-SAR backend.");
+          setAnalysis(null);
+          setStatusNotice(`Failed to reach Q-SAR backend for scenario ${sc}.`);
         }
         return false;
       } finally {
@@ -602,16 +617,29 @@ export default function MissionControlDashboard() {
                 </span>
                 <span
                   className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 font-mono text-[10px] font-semibold ${
-                    provenance?.is_real_satellite_data
-                      ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
-                      : "border-cyan-500/40 bg-cyan-500/15 text-cyan-300"
+                    backendStatus === "offline"
+                      ? "border-indigo-500/40 bg-indigo-500/15 text-indigo-300"
+                      : provenance?.data_source_mode === "live_nisar"
+                        ? "border-cyan-500/40 bg-cyan-500/15 text-cyan-300"
+                        : provenance?.is_real_satellite_data
+                          ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-300"
+                          : "border-amber-500/40 bg-amber-500/15 text-amber-300"
                   }`}
                 >
                   <Radio className="h-2.5 w-2.5" />
-                  {provenance?.is_real_satellite_data
-                    ? `REAL S1 C-BAND RTC · ${provenance.polarization_channels?.join("+") ?? "VV+VH"}`
-                    : `NISAR L-BAND SIM · ${provenance?.polarization_channels?.join("+") ?? "HH+HV"}`}
+                  {backendStatus === "offline"
+                    ? `VERIFIED DEMO SNAPSHOT · ${dataSource === "real_s1_rtc" ? "S1 C-Band" : "L-Band Sim"}`
+                    : provenance?.data_source_mode === "live_nisar"
+                      ? `ACTUAL NASA NISAR · L-Band GCOV (${provenance.polarization_channels?.join("+") ?? "HH+HV"})`
+                      : provenance?.is_real_satellite_data
+                        ? `ACTUAL SENTINEL-1 RTC · C-Band (${provenance.polarization_channels?.join("+") ?? "VV+VH"})`
+                        : `SIMULATED L-BAND PHYSICS · ${provenance?.polarization_channels?.join("+") ?? "HH+HV"}`}
                 </span>
+                {analysis?.scenario && (
+                  <span className="hidden md:inline-flex font-mono text-[10px] text-slate-400">
+                    {analysis.scenario.pre_date} → {analysis.scenario.post_date}
+                  </span>
+                )}
               </div>
               <div className="text-[10px] text-slate-400">
                 {analysis?.scenario.region ?? activeScenarioMeta?.region ?? "Earth Observation Disaster Routing"} ·{" "}

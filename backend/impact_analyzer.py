@@ -103,6 +103,58 @@ def _polyline_length_km(coords: Sequence[Sequence[float]]) -> float:
     return total
 
 
+def _clip_segment_to_bounds(
+    p0: Sequence[float], p1: Sequence[float], bounds: Sequence[float]
+) -> Optional[Tuple[Tuple[float, float], Tuple[float, float]]]:
+    """Liang-Barsky 2D line-clipping algorithm against WGS84 bounding box [west, south, east, north].
+    
+    Returns clipped endpoints ((x0', y0'), (x1', y1')) or None if strictly outside.
+    """
+    x0, y0 = float(p0[0]), float(p0[1])
+    x1, y1 = float(p1[0]), float(p1[1])
+    dx = x1 - x0
+    dy = y1 - y0
+    west, south, east, north = [float(v) for v in bounds]
+
+    t0, t1 = 0.0, 1.0
+    p = [-dx, dx, -dy, dy]
+    q = [x0 - west, east - x0, y0 - south, north - y0]
+
+    for pi, qi in zip(p, q):
+        if pi == 0.0:
+            if qi < 0.0:
+                return None
+        else:
+            t = qi / pi
+            if pi < 0.0:
+                if t > t1:
+                    return None
+                if t > t0:
+                    t0 = t
+            else:
+                if t < t0:
+                    return None
+                if t < t1:
+                    t1 = t
+
+    if t0 > t1:
+        return None
+
+    clipped_p0 = (x0 + t0 * dx, y0 + t0 * dy)
+    clipped_p1 = (x0 + t1 * dx, y0 + t1 * dy)
+    return (clipped_p0, clipped_p1)
+
+
+def _polyline_clipped_length_km(coords: Sequence[Sequence[float]], bounds: Sequence[float]) -> float:
+    """Compute the exact geodesic length in km of polyline segments falling inside bounds."""
+    total_km = 0.0
+    for i in range(len(coords) - 1):
+        clipped = _clip_segment_to_bounds(coords[i], coords[i + 1], bounds)
+        if clipped is not None:
+            total_km += haversine_km(clipped[0][0], clipped[0][1], clipped[1][0], clipped[1][1])
+    return total_km
+
+
 def _coord_to_tile_id(lon: float, lat: float, bbox: Sequence[float]) -> Optional[int]:
     west, south, east, north = bbox
     if not (west <= lon <= east and south <= lat <= north):
@@ -227,20 +279,22 @@ def _cached_osm_spatial_index(
         ry1 = max(float(p[1]) for p in coords)
 
         hit_tiles: List[int] = []
+        tile_clipped_km: Dict[int, float] = {}
         for idx, b in tile_bounds_key:
             west, south, east, north = b
             if rx1 < west or rx0 > east or ry1 < south or ry0 > north:
                 continue
-            for j in range(len(coords) - 1):
-                if _segment_intersects_bounds(coords[j], coords[j + 1], b):
-                    hit_tiles.append(idx)
-                    tile_road_count[idx] += 1
-                    break
+            seg_km = _polyline_clipped_length_km(coords, b)
+            if seg_km > 1e-4:
+                hit_tiles.append(idx)
+                tile_road_count[idx] += 1
+                tile_clipped_km[idx] = round(seg_km, 4)
 
         road_records.append(
             (
                 length_km,
                 tuple(hit_tiles),
+                tile_clipped_km,
                 str(road.get("name") or road.get("highway", "Road")),
                 str(road.get("highway", "road")),
                 bool(road.get("bridge", False)),
@@ -344,22 +398,30 @@ def compute_humanitarian_and_explainable_impact(
     road_hazard_km = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0}
     flagged_roads: List[Dict[str, Any]] = []
 
-    for length_km, hit_tiles, r_name, r_hw, r_bridge in spatial["road_records"]:
+    for length_km, hit_tiles, tile_clipped_km, r_name, r_hw, r_bridge in spatial["road_records"]:
         if hit_tiles:
-            worst_cls = max(int(tile_by_id[idx]["quantum_class"]) for idx in hit_tiles)
-            if any(int(tile_by_id[idx]["quantum_class"]) == 1 for idx in hit_tiles):
-                worst_cls = 1
-            elif any(int(tile_by_id[idx]["quantum_class"]) == 2 for idx in hit_tiles):
-                worst_cls = 2
-            road_hazard_km[worst_cls] += length_km
-            if worst_cls in (1, 2) and len(flagged_roads) < 12:
+            road_clipped_hazard_km = 0.0
+            worst_cls = 0
+            for idx in hit_tiles:
+                t_cls = int(tile_by_id[idx]["quantum_class"])
+                c_km = tile_clipped_km.get(idx, 0.0)
+                road_hazard_km[t_cls] += c_km
+                if t_cls in (1, 2):
+                    road_clipped_hazard_km += c_km
+                    if worst_cls == 0 or (worst_cls == 2 and t_cls == 1):
+                        worst_cls = t_cls
+                elif t_cls == 3 and worst_cls == 0:
+                    worst_cls = 3
+
+            if worst_cls in (1, 2) and road_clipped_hazard_km > 0.01 and len(flagged_roads) < 12:
                 flagged_roads.append(
                     {
                         "name": r_name,
                         "highway": r_hw,
                         "bridge": r_bridge,
                         "hazard_class": worst_cls,
-                        "length_km": round(length_km, 2),
+                        "length_km": round(road_clipped_hazard_km, 2),
+                        "total_road_km": round(length_km, 2),
                         "tile_ids": list(hit_tiles[:4]),
                     }
                 )
@@ -637,7 +699,8 @@ def compute_humanitarian_and_explainable_impact(
         "facilities_exposed": facilities_exposed[:12],
         "estimated_exposed_population": int(estimated_exposed_pop),
         "population_method": (
-            f"OSM population tags ({tagged_pop_count} tagged) + settlement class density prior (estimate only)"
+            f"OSM population tags ({tagged_pop_count} tagged) + settlement class density prior "
+            "(Modeled proximity estimate — not confirmed casualties or evacuees)"
             if settlements_exposed
             else "No hazard-intersecting OSM settlements detected"
         ),

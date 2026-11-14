@@ -548,6 +548,15 @@ export default function QuantumTelemetryPanel({
                         <td className="px-1.5 text-right">{routing.routing_comparison.classical_astar.bridge_crossings}</td>
                         <td className="pl-1.5 text-right text-slate-400">{routing.routing_comparison.classical_astar.runtime_ms.toFixed(1)}ms</td>
                       </tr>
+                      {routing.routing_comparison.classical_enumeration && (
+                        <tr>
+                          <td className="py-1.5 pr-2 text-sky-300">Exact 4-Candidate Enum</td>
+                          <td className="px-1.5 text-right">{routing.routing_comparison.classical_enumeration.distance_km.toFixed(1)} km</td>
+                          <td className="px-1.5 text-right text-sky-300">{routing.routing_comparison.classical_enumeration.hazard_exposure.toFixed(1)}</td>
+                          <td className="px-1.5 text-right">{routing.routing_comparison.classical_enumeration.bridge_crossings}</td>
+                          <td className="pl-1.5 text-right text-slate-400">&lt;0.1ms</td>
+                        </tr>
+                      )}
                       <tr className="bg-emerald-950/25 font-semibold text-emerald-200">
                         <td className="py-1.5 pr-2">XY-QAOA Selector</td>
                         <td className="px-1.5 text-right">{routing.routing_comparison.qaoa_selected.distance_km.toFixed(1)} km</td>
@@ -558,6 +567,9 @@ export default function QuantumTelemetryPanel({
                     </tbody>
                   </table>
                 </div>
+                <p className="mt-2 text-[9px] text-slate-400 leading-tight">
+                  Note: 4-Qubit XY-QAOA optimizes corridor selection across 4 classically extracted Pareto strategies. Classical enumeration evaluates all 4 candidates in &lt;0.1 ms, establishing an exact classical baseline.
+                </p>
               </div>
             )}
 
@@ -726,11 +738,13 @@ export default function QuantumTelemetryPanel({
               </div>
             )}
 
-            {/* Live Scene Accuracy vs Reference */}
+            {/* Live Scene Accuracy / Heuristic Agreement vs Reference */}
             <div className="rounded-lg border border-slate-800 bg-slate-900/75 p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-semibold text-slate-200">
-                  Live Scene: Hybrid Q-SAR vs. Classical CNN
+                  {analysis.model_status.is_verified_manual_ground_truth
+                    ? "Live Scene Accuracy (Ground Truth)"
+                    : "Scene Heuristic Reference Agreement"}
                 </span>
                 <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] text-slate-300">
                   {analysis.model_status.is_verified_manual_ground_truth
@@ -820,7 +834,7 @@ export default function QuantumTelemetryPanel({
                 )}
                 {tracks?.real_s1_rtc_zeroshot?.overall && (
                   <div className="flex items-center justify-between rounded bg-slate-950/70 px-2.5 py-1.5 border border-slate-800/70">
-                    <span className="text-slate-300">Real S1 Zero-Shot (108)</span>
+                    <span className="text-slate-300">Real S1 Heuristic Agreement (108)</span>
                     <span>
                       <span className="text-cyan-300">
                         Q {(tracks.real_s1_rtc_zeroshot.overall.hybrid_quantum.accuracy * 100).toFixed(1)}%
