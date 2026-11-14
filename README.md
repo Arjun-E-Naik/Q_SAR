@@ -4,6 +4,7 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-q--sar.vercel.app-0ea5e9?style=for-the-badge&logo=vercel)](https://q-sar.vercel.app)
 [![2-Min Video Demo](https://img.shields.io/badge/Video%20Demo-Google%20Drive-E37400?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1NV8apq-bcMNZbL7sSdzM7RHH7h4r8RF2/view?usp=sharing)
+[![Project Demo Slides](https://img.shields.io/badge/Project%20Demo-7--Slide%20Deck-f59e0b?style=for-the-badge&logo=googleslides&logoColor=white)](https://docs.google.com/presentation/d/144NbAaPZGeU-zVOMqURWNSCGx6xM03ur/edit?usp=sharing&ouid=101372632890848970805&rtpof=true&sd=true)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-1e293b?style=for-the-badge&logo=github)](https://github.com/Arjun-E-Naik/Q_SAR.git)
 [![NASA Space Apps](https://img.shields.io/badge/NASA-Space%20Apps%202026-1d4ed8?style=for-the-badge)](https://www.spaceappschallenge.org/)
 
@@ -13,6 +14,7 @@
 
 * **Live Web Application (Vercel):** [https://q-sar.vercel.app](https://q-sar.vercel.app)
 * **Full 2-Minute Video Walkthrough:** [Watch on Google Drive](https://drive.google.com/file/d/1NV8apq-bcMNZbL7sSdzM7RHH7h4r8RF2/view?usp=sharing)
+* **Official NASA Project Demo (7-Slide Deck):** [View on Google Slides](https://docs.google.com/presentation/d/144NbAaPZGeU-zVOMqURWNSCGx6xM03ur/edit?usp=sharing&ouid=101372632890848970805&rtpof=true&sd=true)
 * **GitHub Source Code:** [https://github.com/Arjun-E-Naik/Q_SAR.git](https://github.com/Arjun-E-Naik/Q_SAR.git)
 * **Field Operator Manual & User Guide:** [USER_MANUAL.md](USER_MANUAL.md)
 * **Technical Architecture Deep Dive:** [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)
