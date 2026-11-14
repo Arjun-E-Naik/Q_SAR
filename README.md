@@ -3,6 +3,7 @@
 *Built for the NASA International Space Apps Challenge 2026: "Dancing with the SARs"*
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-q--sar.vercel.app-0ea5e9?style=for-the-badge&logo=vercel)](https://q-sar.vercel.app)
+[![2-Min Video Demo](https://img.shields.io/badge/Video%20Demo-Google%20Drive-E37400?style=for-the-badge&logo=googledrive&logoColor=white)](https://drive.google.com/file/d/1NV8apq-bcMNZbL7sSdzM7RHH7h4r8RF2/view?usp=sharing)
 [![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-1e293b?style=for-the-badge&logo=github)](https://github.com/Arjun-E-Naik/Q_SAR.git)
 [![NASA Space Apps](https://img.shields.io/badge/NASA-Space%20Apps%202026-1d4ed8?style=for-the-badge)](https://www.spaceappschallenge.org/)
 
@@ -11,6 +12,7 @@
 ### Quick Links
 
 * **Live Web Application (Vercel):** [https://q-sar.vercel.app](https://q-sar.vercel.app)
+* **Full 2-Minute Video Walkthrough:** [Watch on Google Drive](https://drive.google.com/file/d/1NV8apq-bcMNZbL7sSdzM7RHH7h4r8RF2/view?usp=sharing)
 * **GitHub Source Code:** [https://github.com/Arjun-E-Naik/Q_SAR.git](https://github.com/Arjun-E-Naik/Q_SAR.git)
 * **Field Operator Manual & User Guide:** [USER_MANUAL.md](USER_MANUAL.md)
 * **Technical Architecture Deep Dive:** [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)
