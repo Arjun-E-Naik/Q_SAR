@@ -36,6 +36,61 @@ Q-SAR Sentinel 2.0 addresses these gaps in a unified decision-support workflow c
 - **Geospatial Exposure & Verification Workflow:** Computes cosine-latitude geodesic hazard areas (km2 and hectares), tracks exposed OSM settlements, critical facilities (hospitals, clinics, fire stations, police, shelters, schools), and bridge crossings, ranks tiles via a weighted verification priority queue, separates automated `radiometric_reference_label` from `verified_ground_truth_label`, persists operator tile triage and route approvals (`/api/verifications`), and exports enriched `.geojson` or printable Situation Reports (SITREP).
 - **Constraint-Preserving XY-QAOA Route Selection:** Generates four diverse candidate corridors across contracted OSM road networks (or a `6x6` tactical grid fallback when OSM connectivity is unavailable), constructs a 4-qubit Ising Hamiltonian controlled by Risk Aversion (`alpha` in `[0.2, 2.0]`), prepares an exact Hamming-weight-1 `|W_4>` state, and evolves a constraint-preserving XY ring mixer (`valid_onehot_prob_mass >= 0.99` vs. unconstrained X-mixer leakage diagnostic) benchmarked against Classical Direct, Dijkstra, and A*.
 
+## Operational Scenarios & Step-by-Step Field Workflow
+
+### Real-World Disaster Scenarios
+
+Q-SAR Sentinel includes pre-packaged, verified satellite scenes along with a live search engine for any global coordinates:
+
+1. **Wainganga River Basin (Maharashtra, India) — Monsoon Flood & Inundation**
+   * **Ground Reality:** Heavy monsoon rains and upstream dam releases from the Gosikhurd reservoir inundate agricultural plains and sever rural road connections.
+   * **Radar Physics:** Flat standing water reflects microwave radar pulses away from the satellite, causing a severe drop in co-pol backscatter ($-6\text{ to }-12\text{ dB}$). Emergent flooded vegetation creates a corner-reflector "double-bounce" effect, producing an anomalous bright radar return ($+3\text{ to }+5\text{ dB}$).
+   * **Response Goal:** Pinpoint submerged bridges, isolate cut-off villages, and identify safe bypass corridors for rescue teams.
+
+2. **California Foothills (Butte & Tehama Counties, USA) — Wildfire Canopy Burn Scar**
+   * **Ground Reality:** High-intensity wildfires burn through dense pine and oak woodland, destroying forest canopies and blocking critical evacuation routes through smoke.
+   * **Radar Physics:** Loss of tree crowns eliminates multi-path volume scattering, visible as a pronounced drop in cross-polarization backscatter (`VH`/`HV`).
+   * **Response Goal:** Map the burn perimeter through dense smoke, identify endangered emergency shelters, and route supply trucks away from active fire zones.
+
+3. **Vidarbha Agricultural Basin (Central India) — Drought & Crop Stress**
+   * **Ground Reality:** Prolonged rain deficits during the Kharif season lead to severe topsoil moisture depletion and crop failure.
+   * **Radar Physics:** Dry soil and wilting crops lower the dielectric constant, steadily reducing radar backscatter over time.
+   * **Response Goal:** Quantify total damaged cropland acreage (in hectares) to support targeted drought relief and agricultural compensation.
+
+4. **Dynamic Global Search (Any AOI on Earth)**
+   * **Function:** Type any city, river basin, or coordinates (e.g., `29.76, -95.37` for Houston). The system automatically queries Microsoft Planetary Computer STAC for matching pre/post Sentinel-1 radar passes and downloads local OpenStreetMap roads, bridges, and hospitals.
+
+---
+
+### Step-by-Step Operator Workflow
+
+Emergency response coordinators follow this procedure during an operational briefing:
+
+```mermaid
+flowchart TD
+    A["1. Select Region or Search Any AOI"] --> B["2. Review Sensor Provenance & Satellite Baseline"]
+    B --> C["3. Examine Priority Action Queue & Chokepoints"]
+    C --> D["4. Inspect High-Entropy Tiles & Quantum Telemetry"]
+    D --> E["5. Complete Human-in-the-Loop Triage"]
+    E --> F["6. Tune Route Risk Aversion (Drone / Rescue / Medical)"]
+    F --> G["7. Select Safe Corridor & Sign Off Route"]
+    G --> H["8. Export Field GeoJSON & Print Official SITREP"]
+```
+
+1. **Select Region:** Choose a preset scenario (such as **Wainganga Flood**) from the header tabs or click **Search Area** to configure a custom location.
+2. **Review Sensor Metadata:** Verify the acquisition baseline dates (pre-event vs. post-event) and check the sensor mode badge (`Real S1-RTC` C-band or `NISAR Sim` L-band).
+3. **Examine Priority Queue:** Review the ranked chokepoint list to identify tiles with the highest severity score (factoring in hazard intensity, flooded bridges, critical facilities, and model uncertainty).
+4. **Inspect High-Entropy Tiles:** Click on tiles flagged with **Disagreement** or **Abstention**. Review the dual-polarization decibel values ($\Delta\sigma^0$) and quantum circuit entropy.
+5. **Complete Human-in-the-Loop Triage:** Verify or overrule automated classifications directly in the Tile Inspector panel (mark as *Approved*, *Uncertain*, or *False Alarm*) and record field notes.
+6. **Tune Route Risk Aversion:** Adjust the Risk Aversion slider ($\alpha \in [0.2, 2.0]$) to match the deployment mission:
+   * **Drone ($\alpha = 0.35$):** Shortest physical path for fast aerial surveillance.
+   * **Rescue ($\alpha = 1.00$):** Balanced safety corridor for high-clearance emergency vehicles.
+   * **Medical ($\alpha = 1.70$):** Maximum-safety evacuation route steering completely clear of hazard zones.
+7. **Approve Response Corridor:** Select the optimal corridor and transition its status from *Pending Review* to *Approved for Reconnaissance*.
+8. **Export Briefing:** Click **SITREP** to print a field-ready PDF mission report or click **GeoJSON** to export the verified corridors and hazard boundaries into ATAK, QGIS, or vehicle navigation units.
+
+---
+
 ## Tools and Technology Stack
 
 | Layer | Technologies Used |
