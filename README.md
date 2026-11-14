@@ -14,7 +14,7 @@
 
 * **Live Web Application (Vercel):** [https://q-sar.vercel.app](https://q-sar.vercel.app)
 * **Full 2-Minute Video Walkthrough:** [Watch on Google Drive](https://drive.google.com/file/d/1NV8apq-bcMNZbL7sSdzM7RHH7h4r8RF2/view?usp=sharing)
-* **Official NASA Project Demo (7-Slide Deck):** [View on Google Slides](https://docs.google.com/presentation/d/144NbAaPZGeU-zVOMqURWNSCGx6xM03ur/edit?usp=sharing&ouid=101372632890848970805&rtpof=true&sd=true)
+* **Official NASA Project Demo (7-Slide Deck):** [View on Google Slides](https://docs.google.com/presentation/d/144NbAaPZGeU-zVOMqURWNSCGx6xM03ur/edit?usp=sharing&ouid=101372632890848970805&rtpof=true&sd=true) | [Download Deck PDF](Q-SAR-Sentinel-20.pdf)
 * **GitHub Source Code:** [https://github.com/Arjun-E-Naik/Q_SAR.git](https://github.com/Arjun-E-Naik/Q_SAR.git)
 * **Field Operator Manual & User Guide:** [USER_MANUAL.md](USER_MANUAL.md)
 * **Technical Architecture Deep Dive:** [TECHNICAL_ARCHITECTURE.md](TECHNICAL_ARCHITECTURE.md)
